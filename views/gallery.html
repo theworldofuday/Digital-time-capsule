@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - Digital Time Capsule</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- 3D effects will be implemented with pure CSS for demo -->
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>Digital Time Capsule</h2>
+            </div>
+            <div class="nav-menu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/create" class="nav-link">Create Capsule</a>
+                <a href="/gallery" class="nav-link active">Gallery</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Gallery Header -->
+    <section class="hero" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 120px 0 80px;">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title" style="font-size: 3rem;">Time Capsule Gallery</h1>
+                <p class="hero-description">
+                    Explore the collection of time capsules from around the world. 
+                    Watch countdowns tick down and discover revealed memories.
+                </p>
+                <div class="hero-buttons">
+                    <a href="/create" class="btn btn-primary">Create Your Own</a>
+                    <button onclick="location.reload()" class="btn btn-secondary">🔄 Refresh Gallery</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter Section -->
+    <section style="background: #f8f9fa; padding: 2rem 0; border-bottom: 1px solid #e1e5e9;">
+        <div class="container">
+            <div style="display: flex; justify-content: center; align-items: center; gap: 2rem; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <label style="font-weight: 600; color: #333;">Filter:</label>
+                    <select id="filter-status" style="padding: 0.5rem 1rem; border-radius: 5px; border: 1px solid #ddd;">
+                        <option value="all">All Capsules</option>
+                        <option value="locked">🔒 Sealed</option>
+                        <option value="unlocked">🔓 Revealed</option>
+                    </select>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <label style="font-weight: 600; color: #333;">Sort by:</label>
+                    <select id="sort-by" style="padding: 0.5rem 1rem; border-radius: 5px; border: 1px solid #ddd;">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="unlock-soon">Unlocking Soon</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Grid -->
+    <section class="features" style="padding: 4rem 0;">
+        <div class="container">
+            <div id="gallery-stats" style="text-align: center; margin-bottom: 3rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; max-width: 800px; margin: 0 auto;">
+                    <div style="background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <div style="font-size: 2rem; font-weight: 700; color: #00d4ff; margin-bottom: 0.5rem;" id="total-capsules">0</div>
+                        <div style="color: #666;">Total Capsules</div>
+                    </div>
+                    <div style="background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <div style="font-size: 2rem; font-weight: 700; color: #28a745; margin-bottom: 0.5rem;" id="unlocked-capsules">0</div>
+                        <div style="color: #666;">Revealed</div>
+                    </div>
+                    <div style="background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <div style="font-size: 2rem; font-weight: 700; color: #ffc107; margin-bottom: 0.5rem;" id="sealed-capsules">0</div>
+                        <div style="color: #666;">Still Sealed</div>
+                    </div>
+                    <div style="background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <div style="font-size: 2rem; font-weight: 700; color: #764ba2; margin-bottom: 0.5rem;" id="unlocking-today">0</div>
+                        <div style="color: #666;">Unlocking Today</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="gallery-grid" id="gallery-container">
+                <!-- Loading state -->
+                <div style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                    <div class="loading" style="width: 40px; height: 40px; border-width: 4px; margin: 0 auto 1rem;"></div>
+                    <p style="color: #666; font-size: 1.1rem;">Loading time capsules...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Empty State (hidden by default) -->
+    <section id="empty-state" style="display: none; padding: 4rem 0; text-align: center;">
+        <div class="container">
+            <div style="max-width: 500px; margin: 0 auto;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">📦</div>
+                <h2 style="color: #333; margin-bottom: 1rem;">No Time Capsules Yet</h2>
+                <p style="color: #666; margin-bottom: 2rem; line-height: 1.8;">
+                    Be the first to create a digital time capsule! 
+                    Share your memories, thoughts, or messages with the future.
+                </p>
+                <a href="/create" class="btn btn-primary">Create First Capsule</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- How Countdown Works -->
+    <section class="cta">
+        <div class="container">
+            <h2>How Time Capsules Work</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin: 3rem 0; text-align: left;">
+                <div>
+                    <h3 style="color: #00d4ff; margin-bottom: 1rem;">🔒 Sealed State</h3>
+                    <p style="color: #666; line-height: 1.8;">
+                        When first created, capsules are encrypted and sealed. 
+                        Only the title, creator, and countdown are visible.
+                    </p>
+                </div>
+                <div>
+                    <h3 style="color: #00d4ff; margin-bottom: 1rem;">⏰ Live Countdown</h3>
+                    <p style="color: #666; line-height: 1.8;">
+                        Watch real-time countdowns showing exactly when each capsule will unlock. 
+                        The anticipation builds!
+                    </p>
+                </div>
+                <div>
+                    <h3 style="color: #00d4ff; margin-bottom: 1rem;">🎉 Automatic Reveal</h3>
+                    <p style="color: #666; line-height: 1.8;">
+                        When the countdown reaches zero, capsules automatically decrypt 
+                        and reveal their hidden contents to the world.
+                    </p>
+                </div>
+            </div>
+            <a href="/create" class="btn btn-primary">Start Your Time Capsule Journey</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Digital Time Capsule</h3>
+                    <p>Preserving memories for the future, one capsule at a time.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Platform</h4>
+                        <a href="/">Home</a>
+                        <a href="/create">Create Capsule</a>
+                        <a href="/gallery">Gallery</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Features</h4>
+                        <a href="#">Encryption</a>
+                        <a href="#">Countdown Timers</a>
+                        <a href="#">Media Upload</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Digital Time Capsule. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+        // Enhanced gallery functionality
+        let allCapsules = [];
+        
+        // Filter and sort functionality
+        document.getElementById('filter-status').addEventListener('change', filterAndSortCapsules);
+        document.getElementById('sort-by').addEventListener('change', filterAndSortCapsules);
+        
+        function filterAndSortCapsules() {
+            const filterStatus = document.getElementById('filter-status').value;
+            const sortBy = document.getElementById('sort-by').value;
+            
+            let filteredCapsules = [...allCapsules];
+            
+            // Apply filter
+            if (filterStatus === 'locked') {
+                filteredCapsules = filteredCapsules.filter(c => !c.is_unlocked && new Date(c.unlock_date) > new Date());
+            } else if (filterStatus === 'unlocked') {
+                filteredCapsules = filteredCapsules.filter(c => c.is_unlocked || new Date(c.unlock_date) <= new Date());
+            }
+            
+            // Apply sort
+            filteredCapsules.sort((a, b) => {
+                switch (sortBy) {
+                    case 'oldest':
+                        return new Date(a.created_date) - new Date(b.created_date);
+                    case 'unlock-soon':
+                        return new Date(a.unlock_date) - new Date(b.unlock_date);
+                    case 'newest':
+                    default:
+                        return new Date(b.created_date) - new Date(a.created_date);
+                }
+            });
+            
+            // Re-render gallery
+            renderGallery(filteredCapsules);
+        }
+        
+        function startCountdownTimers() {
+            const countdowns = document.querySelectorAll('[data-unlock-date]');
+            
+            const updateCountdown = (element) => {
+                const unlockDate = new Date(element.getAttribute('data-unlock-date'));
+                const now = new Date();
+                const difference = unlockDate - now;
+                
+                if (difference > 0) {
+                    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+                    
+                    const countdownElement = element.querySelector('.countdown-timer');
+                    if (countdownElement) {
+                        countdownElement.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+                    }
+                } else {
+                    // Time's up! Reload the gallery to show unlocked content
+                    location.reload();
+                }
+            };
+            
+            countdowns.forEach(countdown => {
+                updateCountdown(countdown);
+            });
+            
+            // Update every second
+            setInterval(() => {
+                countdowns.forEach(countdown => {
+                    updateCountdown(countdown);
+                });
+            }, 1000);
+        }
+        
+        function renderGallery(capsules) {
+            const container = document.getElementById('gallery-container');
+            container.innerHTML = '';
+            
+            if (capsules.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #666;">No capsules match your current filter.</div>';
+                return;
+            }
+            
+            capsules.forEach(capsule => {
+                const capsuleElement = createCapsuleCard(capsule);
+                container.appendChild(capsuleElement);
+            });
+            
+            // Restart countdown timers
+            startCountdownTimers();
+        }
+        
+        function createCapsuleCard(capsule) {
+            const card = document.createElement('div');
+            card.className = `capsule-card ${capsule.is_unlocked || new Date(capsule.unlock_date) <= new Date() ? 'unlocked' : 'locked'}`;
+            
+            const unlockDate = new Date(capsule.unlock_date);
+            const now = new Date();
+            const isUnlocked = capsule.is_unlocked || unlockDate <= now;
+            
+            card.innerHTML = `
+                <h3 class="capsule-title">${escapeHtml(capsule.title)}</h3>
+                <div class="capsule-meta">
+                    <span>👤 ${escapeHtml(capsule.creator_name || 'Anonymous')}</span>
+                    <span>📅 ${new Date(capsule.created_date).toLocaleDateString()}</span>
+                </div>
+                
+                ${!isUnlocked ? `
+                    <div class="countdown" data-unlock-date="${capsule.unlock_date}">
+                        <div class="countdown-timer" id="countdown-${capsule.id}">
+                            Calculating...
+                        </div>
+                        <div>⏰ Time until reveal</div>
+                    </div>
+                    <p style="color: #666; font-style: italic; margin: 1rem 0;">
+                        "This capsule is sealed with encrypted content..."
+                    </p>
+                ` : `
+                    <div class="message success">🎉 Content Revealed!</div>
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 10px; margin: 1rem 0; border-left: 4px solid #00d4ff;">
+                        <strong>Message:</strong>
+                        <p style="margin: 0.5rem 0 0; color: #333; line-height: 1.6;">${escapeHtml(capsule.message || 'No message content')}</p>
+                    </div>
+                    ${capsule.media_type && capsule.media_type.startsWith('image/') ? 
+                        `<img src="/uploads/${capsule.media_path}" alt="Capsule media" class="media-preview" onclick="openMediaModal('${capsule.media_path}', 'image')">` : ''
+                    }
+                    ${capsule.media_type && capsule.media_type.startsWith('video/') ? 
+                        `<video controls class="media-preview"><source src="/uploads/${capsule.media_path}" type="${capsule.media_type}"></video>` : ''
+                    }
+                `}
+                
+                <button class="btn ${isUnlocked ? 'btn-primary' : 'btn-secondary'}" onclick="viewCapsuleDetails(${capsule.id})" style="width: 100%; margin-top: 1rem;">
+                    ${isUnlocked ? '👁️ View Full Details' : '🔍 View Capsule Info'}
+                </button>
+            `;
+            
+            return card;
+        }
+        
+        function updateGalleryStats(capsules) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+            
+            const total = capsules.length;
+            const unlocked = capsules.filter(c => c.is_unlocked || new Date(c.unlock_date) <= now).length;
+            const sealed = total - unlocked;
+            const unlockingToday = capsules.filter(c => {
+                const unlockDate = new Date(c.unlock_date);
+                return unlockDate >= today && unlockDate < tomorrow && !c.is_unlocked;
+            }).length;
+            
+            document.getElementById('total-capsules').textContent = total;
+            document.getElementById('unlocked-capsules').textContent = unlocked;
+            document.getElementById('sealed-capsules').textContent = sealed;
+            document.getElementById('unlocking-today').textContent = unlockingToday;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Load gallery on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/api/capsules');
+                allCapsules = await response.json();
+                
+                if (Array.isArray(allCapsules)) {
+                    updateGalleryStats(allCapsules);
+                    filterAndSortCapsules(); // This will render the initial gallery
+                } else {
+                    throw new Error('Invalid response format');
+                }
+            } catch (error) {
+                console.error('Failed to load gallery:', error);
+                document.getElementById('gallery-container').innerHTML = 
+                    '<div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #ff6b6b;">Failed to load capsules. Please refresh the page.</div>';
+            }
+        });
+        
+        // Enhanced view capsule function
+        window.viewCapsuleDetails = async function(id) {
+            try {
+                const response = await fetch(`/api/capsules/${id}`);
+                const capsule = await response.json();
+                
+                if (response.ok) {
+                    const isUnlocked = capsule.is_unlocked || new Date(capsule.unlock_date) <= new Date();
+                    const unlockDate = new Date(capsule.unlock_date).toLocaleString();
+                    const createdDate = new Date(capsule.created_date).toLocaleString();
+                    
+                    let details = `🗂️ CAPSULE DETAILS\n\n`;
+                    details += `Title: ${capsule.title}\n`;
+                    details += `Creator: ${capsule.creator_name || 'Anonymous'}\n`;
+                    details += `Created: ${createdDate}\n`;
+                    details += `Unlock Date: ${unlockDate}\n`;
+                    details += `Status: ${isUnlocked ? '🔓 REVEALED' : '🔒 SEALED'}\n\n`;
+                    
+                    if (isUnlocked) {
+                        details += `📝 MESSAGE:\n${capsule.message || 'No message content'}\n\n`;
+                        if (capsule.media_type) {
+                            details += `📎 MEDIA: ${capsule.media_type} file attached\n`;
+                        }
+                    } else {
+                        details += `This capsule is encrypted and will be revealed on ${unlockDate}`;
+                    }
+                    
+                    alert(details);
+                } else {
+                    alert('Failed to load capsule details');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error. Please try again.');
+            }
+        };
+        
+        // Auto-refresh gallery every 30 seconds to catch newly unlocked capsules
+        setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                const now = Date.now();
+                const shouldRefresh = allCapsules.some(capsule => {
+                    const unlockTime = new Date(capsule.unlock_date).getTime();
+                    return !capsule.is_unlocked && unlockTime <= now && unlockTime > now - 30000;
+                });
+                
+                if (shouldRefresh) {
+                    location.reload();
+                }
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
